@@ -1,0 +1,132 @@
+﻿
+<style>
+    .wrapper {
+        display: flex;
+        font-family: sans-serif;
+    }
+
+    #rooms {
+        border-right: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    #chat {
+        flex: 1;
+        padding: 10px;
+    }
+
+    #messagesList {
+        list-style: none;
+        padding: 0;
+    }
+</style>
+
+<div class="wrapper">
+
+    <div id="rooms">
+        <h3>Rooms</h3>
+        <input id="roomInput" type="text" placeholder="New room name" />
+        <button onclick="joinRoom()">Join</button>
+        <ul id="roomList"></ul>
+    </div>
+
+    <!-- Chat panel -->
+    <div id="chat">
+        <h3 id="currentRoomTitle">No room selected</h3>
+        <input id="userInput" type="text" placeholder="Your name" />
+        <input id="messageInput" type="text" placeholder="Message..." />
+        <button onclick="sendMessage()">Send</button>
+
+        <ul id="messagesList"></ul>
+    </div>
+
+</div>
+
+@section scripts {
+
+    <script>
+        let currentRoom = null;
+        const messagesByRoom = {}; // { roomName: [ {user, message} ] }
+
+        const connection = new signalR.HubConnectionBuilder()
+          .withUrl("/chatbot")
+          .build();
+
+        // Nhận tin nhắn từ server
+        connection.on("ReceiveMessage", (room, user, message) => {
+            if (!currentRoom) return;
+
+            if (!messagesByRoom[room]) messagesByRoom[room] = [];
+            messagesByRoom[room].push({ user, message });
+
+            // Nếu đang ở cùng room thì render
+            if (room === currentRoom) {
+                renderMessages(room);
+            } else {
+              // Nếu muốn có thông báo chưa đọc
+                highlightRoom(room);
+            }
+        });
+
+        connection.start().catch(err => console.error(err));
+
+        function joinRoom() {
+            const room = document.getElementById("roomInput").value;
+            if (!room) return;
+
+            connection.invoke("JoinRoom", room).catch(err => console.error(err));
+
+            // thêm vào sidebar
+            const li = document.createElement("li");
+            li.textContent = room;
+            li.style.cursor = "pointer";
+            li.onclick = () => selectRoom(room);
+            document.getElementById("roomList").appendChild(li);
+
+            if (!messagesByRoom[room]) messagesByRoom[room] = [];
+        }
+
+        function selectRoom(room) {
+            currentRoom = room;
+            document.getElementById("currentRoomTitle").textContent = "Room: " + room;
+            const items = document.querySelectorAll("#roomList li");
+            items.forEach(li => {
+                if (li.textContent === room) {
+                    li.classList.remove('animate__animated', 'animate__flash', 'animate__infinite')
+                }
+            });
+            renderMessages(room);
+        }
+
+        function sendMessage() {
+            if (!currentRoom) {
+                alert("Hãy chọn một room trước!");
+                return;
+            }
+            const user = document.getElementById("userInput").value;
+            const message = document.getElementById("messageInput").value;
+
+            connection.invoke("SendMessageToRoom", currentRoom, user, message)
+            .catch(err => console.error(err));
+        }
+
+        function renderMessages(room) {
+            const list = document.getElementById("messagesList");
+            list.innerHTML = "";
+            (messagesByRoom[room] || []).forEach(m => {
+                const li = document.createElement("li");
+                li.textContent = `${m.user}: ${m.message}`;
+                list.appendChild(li);
+            });
+        }
+
+        function highlightRoom(room) {
+            const items = document.querySelectorAll("#roomList li");
+            items.forEach(li => {
+                if (li.textContent === room) {
+                    li.classList.add('animate__animated', 'animate__flash', 'animate__infinite')
+                }
+            });
+        }
+    </script>
+}
