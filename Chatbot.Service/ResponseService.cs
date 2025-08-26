@@ -113,9 +113,9 @@ namespace Chatbot.Service
 
         public async Task IncrementResponseUsage(int id)
         {
-            var r = await _context.Responses.FindAsync(id);
+            var entity = await _context.Responses.FindAsync(id);
 
-            if (r != null) r.UsageCount++;
+            if (entity != null) entity.UsageCount++;
 
             await _context.SaveChangesAsync();
         }

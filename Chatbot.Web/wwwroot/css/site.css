@@ -1,4 +1,4 @@
-* {
+﻿* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -24,4 +24,222 @@ img {
 button {
     border: none;
     outline: none;
+}
+
+.loader {
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 8px solid lightblue;
+    border-right-color: orange;
+    animation: l2 1s infinite linear;
+}
+
+@keyframes l2 {
+    to {
+        transform: rotate(1turn)
+    }
+}
+
+.overload {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(0,0,0, 0.3);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000
+}
+
+    .overload.show {
+        display: flex;
+    }
+
+#form input {
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.icon-chatbot {
+    width: 70px;
+    height: 70px;
+    position: fixed;
+    bottom: 10%;
+    right: 50px;
+    border-radius: 50%;
+}
+
+.icon-chatbot button {
+    background-color: #ba1531;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.box-chatbot {
+    background-color: #fff;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s linear;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    visibility: hidden
+}
+
+.box-chatbot.show {
+    width: 450px;
+    height: 550px;
+    opacity: 1;
+    visibility: visible;
+}
+
+.box-chatbot.hidden {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    visibility: hidden
+}
+
+.box-chatbot .head {
+    background-color: #ba1531;
+    padding: 12px 18px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    position: relative;
+}
+
+.box-chatbot .head p {
+    text-align: center;
+    font-size: 26px;
+    margin: 0;
+    color: #fff;
+    font-weight: 700;
+}
+
+.box-chatbot .close-box {
+    position: absolute;
+    font-size: 16px;
+    color: #fff;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    cursor: pointer;
+    padding: 18px;
+}
+
+.box-chatbot .conversations {
+    flex-grow: 1;
+}
+
+.form-group {
+    padding: 12px 18px;
+    display: flex;
+    border-top: 1px solid #e5e5e5;
+    position: relative;
+}
+
+.form-group input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
+
+.form-group button[type="submit"] {
+    background-color: #fff;
+    padding: 8px 10px;
+    transition: all 0.25s linear;
+}
+
+.form-group button[type="submit"]:hover {
+    background-color: rgba(186, 21, 49, 0.15);
+    border-radius: 50%;
+    transition: all 0.25s linear;
+}
+
+.form-group button[type="submit"] i {
+    font-size: 20px;
+    color: #ba1531;
+}
+
+.box-chatbot .conversations {
+    overflow-y: auto;
+    padding: 12px 18px;
+}
+
+.conversations .conversation {
+    display: flex;
+    align-items: end;
+    margin-bottom: 20px;
+    font-size: 14px;
+    gap: 6px;
+}
+
+.conversations .conversation .content {
+    background-color: rgba(186, 21, 49, 0.15);
+    text-wrap-mode: wrap;
+    border-radius: 4px;
+    padding: 6px;
+}
+
+.conversations .conversation span i {
+    font-size: 24px;
+    color: #ba1531;
+}
+
+.conversations .conversation.send {
+    justify-content: flex-end;
+}
+
+.conversations .conversation.receive {
+    justify-content: flex-start
+}
+
+.loader-respone {
+    width: 10px;
+    height: 10px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    animation: l5 1s infinite linear alternate;
+    position: absolute;
+    left: calc(20px + 5px);
+    bottom: calc(100% + 5px);
+    display: none;
+}
+
+.loader-respone.show {
+    display: block
+}
+
+@keyframes l5 {
+    0% {
+        box-shadow: 15px 0 #000, -15px 0 #0002;
+        background: #000
+    }
+
+    33% {
+        box-shadow: 15px 0 #000, -15px 0 #0002;
+        background: #0002
+    }
+
+    66% {
+        box-shadow: 15px 0 #0002,-15px 0 #000;
+        background: #0002
+    }
+
+    100% {
+        box-shadow: 15px 0 #0002,-15px 0 #000;
+        background: #000
+    }
 }

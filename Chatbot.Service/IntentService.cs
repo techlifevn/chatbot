@@ -92,6 +92,7 @@ namespace Chatbot.Service
                         Tag = x.Tag,
                         DefaultResponse = x.DefaultResponse,
                         Priority = x.Priority,
+                        Name = x.Name
                     }).ToListAsync();
 
                 return data;

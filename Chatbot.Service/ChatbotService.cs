@@ -34,7 +34,7 @@ namespace Chatbot.Service
         private List<KeywordBoostVm> _keywordBoosts = new();
 
         private readonly double _clarifyMargin = 0.05;   // chênh lệch nhỏ => hỏi lại
-        private readonly double _lowConfidence = 0.49;   // dưới ngưỡng => fallback
+        private readonly double _lowConfidence = 0.48;   // dưới ngưỡng => fallback
         //private readonly string _sessionId;
         //private int? _lastIntentId; // ngữ cảnh đơn giản: ý
 
@@ -207,6 +207,7 @@ namespace Chatbot.Service
         }
         #endregion
 
+        #region Chuyển đổi các từ viết tắt về đúng nghĩa
         private string ExpandSynonyms(string text)
         {
             // Thay synonym -> main_term (ví dụ: "ubnd" => "uy ban nhan dan")
@@ -228,7 +229,10 @@ namespace Chatbot.Service
             }
             return string.Join(" ", tokens);
         }
+        #endregion
 
+
+        #region Danh các kết quả phù hợp
         private List<(IntentVm intent, double score)> ScoreIntents(string user)
         {
             var userTokens = TextNormalizer.Tokenize(user);
@@ -271,7 +275,9 @@ namespace Chatbot.Service
             }
             return results;
         }
+        #endregion
 
+        #region Kiểm tra các từ khóa được boost
         private double Boost(IntentVm intent, List<string> userTokens)
         {
             var set = new HashSet<string>(userTokens, StringComparer.OrdinalIgnoreCase);
@@ -282,6 +288,7 @@ namespace Chatbot.Service
 
             return boost?.Boost ?? 0;
         }
+        #endregion
 
         private ChatResult FinalizeResponse(string user, IntentVm? intent, string answer, double conf, List<(IntentVm intent, double score)> ranked)
         {

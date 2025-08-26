@@ -4,6 +4,7 @@ using Chatbot.Data.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chatbot.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250826115752_AllowNull_ResponseText")]
+    partial class AllowNull_ResponseText
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,9 +41,10 @@ namespace Chatbot.Data.Migrations
                         .HasColumnType("real");
 
                     b.Property<string>("CreateByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateOnDate")
+                    b.Property<DateTime>("CreateOnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("IntentId")
@@ -53,9 +57,10 @@ namespace Chatbot.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LastModifiedByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModifiedOnDate")
+                    b.Property<DateTime>("LastModifiedOnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Order")
@@ -114,9 +119,10 @@ namespace Chatbot.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CreateByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateOnDate")
+                    b.Property<DateTime>("CreateOnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DefaultResponse")
@@ -130,9 +136,10 @@ namespace Chatbot.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LastModifiedByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModifiedOnDate")
+                    b.Property<DateTime>("LastModifiedOnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -166,9 +173,10 @@ namespace Chatbot.Data.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("CreateByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateOnDate")
+                    b.Property<DateTime>("CreateOnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("IntentId")
@@ -185,9 +193,10 @@ namespace Chatbot.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastModifiedByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModifiedOnDate")
+                    b.Property<DateTime>("LastModifiedOnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Order")
@@ -209,9 +218,10 @@ namespace Chatbot.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CreateByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateOnDate")
+                    b.Property<DateTime>("CreateOnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("IntentId")
@@ -224,9 +234,10 @@ namespace Chatbot.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LastModifiedByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModifiedOnDate")
+                    b.Property<DateTime>("LastModifiedOnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Order")
@@ -252,9 +263,10 @@ namespace Chatbot.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CreateByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateOnDate")
+                    b.Property<DateTime>("CreateOnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("IntentId")
@@ -267,9 +279,10 @@ namespace Chatbot.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LastModifiedByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModifiedOnDate")
+                    b.Property<DateTime>("LastModifiedOnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Order")
@@ -297,9 +310,10 @@ namespace Chatbot.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CreateByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateOnDate")
+                    b.Property<DateTime>("CreateOnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDelete")
@@ -309,9 +323,10 @@ namespace Chatbot.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LastModifiedByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModifiedOnDate")
+                    b.Property<DateTime>("LastModifiedOnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("MainTerm")
