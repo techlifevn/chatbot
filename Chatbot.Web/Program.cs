@@ -1,25 +1,41 @@
-﻿using Chatbot.Web;
+﻿using Chatbot.Common;
+using Chatbot.Data.EF;
+using Chatbot.Data.Entity;
+using Chatbot.Service;
+using Chatbot.Web;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString(SystemConstants.ConnectionSqlServer)));
+
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("AllowAnyOrigin", policy =>
     {
-        policy.AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowAnyOrigin(); // hoặc giới hạn domain của bạn
+        policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
     });
 });
 
 builder.Services.AddSignalR();
 
+builder.Services.AddIdentity<User, IdentityRole<Guid>>().AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
+
+builder.Services.AddTransient<IDbConnectionService, DbConnectionService>();
+builder.Services.AddTransient<IIntentService, IntentService>();
+builder.Services.AddTransient<IPatternService, PatternService>();
+builder.Services.AddTransient<IResponseService, ResponseService>();
+builder.Services.AddTransient<ISynonymService, SynonymService>();
+builder.Services.AddTransient<IKeywordBoostService, KeywordBoostService>();
+builder.Services.AddTransient<IChatbotService, ChatbotService>();
+
 var app = builder.Build();
 
-app.UseCors();
+app.UseCors("AllowAnyOrigin");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
