@@ -3,6 +3,7 @@ using Chatbot.Data.EF;
 using Chatbot.Data.Entity;
 using Chatbot.Service;
 using Chatbot.Web;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -24,6 +25,21 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
     });
+});
+
+builder.Services
+.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(options =>
+{
+    options.LoginPath = new PathString("/Login");
+    options.SlidingExpiration = true;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 builder.Services.AddSignalR();

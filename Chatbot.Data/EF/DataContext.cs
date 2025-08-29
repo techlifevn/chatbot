@@ -31,6 +31,8 @@ namespace Chatbot.Data.EF
             builder.ApplyConfiguration(new SynonymConfiguration());
             builder.ApplyConfiguration(new KeywordBoostConfiguration());
         }
+
+
         public DbSet<Intent> Intents { get; set; }
         public DbSet<Pattern> Patterns { get; set; }
         public DbSet<Response> Responses { get; set; }

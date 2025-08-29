@@ -7,7 +7,6 @@ namespace Chatbot.Data.Entity
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string FullName { get; set; }
-        public string Email { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsStatus { get; set; }
         public int Order { get; set; }

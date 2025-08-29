@@ -31,7 +31,7 @@
 
 
             public const int ExpiresUtcMinutes = 30;
-            public const string JWTSecurityKey = "xt7oidxpIRs9uDVnZEu9kZKqmumiF1e1RINb3UMlwCGA3O3Xywc8OZkOs4dmwf";
+            public const string JWTSecurityKey = "0384a2b8593be2aecefe15088aaf38635d59a2c6d5d3077c6af062074b1c27b3";
         }
     }
 
