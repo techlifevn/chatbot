@@ -12,7 +12,7 @@ namespace Chatbot.Service
     {
         Task<PagedResult<KeywordBoostVm>> GetPaging(GetPagingRequest request);
         Task<List<KeywordBoostVm>> GetAll();
-        Task<KeywordBoostVm?> GetById(int id);
+        Task<KeywordBoostVm> GetById(int id);
         Task<Result<bool>> Create(KeywordBoostCreateRequest request);
         Task<Result<bool>> Update(KeywordBoostUpdateRequest request);
         Task<Result<bool>> Delete(int id, string userId);
@@ -101,7 +101,7 @@ namespace Chatbot.Service
             }
         }
 
-        public async Task<KeywordBoostVm?> GetById(int id)
+        public async Task<KeywordBoostVm> GetById(int id)
         {
             try
             {

@@ -5,13 +5,18 @@ using Chatbot.Service;
 using Chatbot.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString(SystemConstants.ConnectionSqlServer)));
+builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+
+builder.Services.AddDbContext<DataContext>(options => options
+    .UseSqlServer(builder.Configuration.GetConnectionString(SystemConstants.ConnectionSqlServer))
+    .ConfigureWarnings(w => w.Ignore(RelationalEventId.CommandExecuted)));
 
 builder.Services.AddCors(options =>
 {

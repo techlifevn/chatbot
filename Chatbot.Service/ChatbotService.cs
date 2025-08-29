@@ -34,7 +34,7 @@ namespace Chatbot.Service
         private List<KeywordBoostVm> _keywordBoosts = new();
 
         private readonly double _clarifyMargin = 0.05;   // chênh lệch nhỏ => hỏi lại
-        private readonly double _lowConfidence = 0.48;   // dưới ngưỡng => fallback
+        private readonly double _lowConfidence = 0.6;   // dưới ngưỡng => fallback
         //private readonly string _sessionId;
         //private int? _lastIntentId; // ngữ cảnh đơn giản: ý
 
@@ -71,7 +71,7 @@ namespace Chatbot.Service
             // 1) chấm điểm cho từng intent
             var scored = ScoreIntents(expanded);
             var ranked = scored.OrderByDescending(s => s.score)
-                               .ThenBy(i => i.intent.Priority) // ưu tiên intent có priority thấp hơn nếu score bằng
+                               .ThenByDescending(i => i.intent.Priority) // ưu tiên intent có priority cao hơn nếu score bằng
                                .ToList();
 
             var top = ranked.FirstOrDefault();
@@ -93,13 +93,23 @@ namespace Chatbot.Service
 
             if (bestScore - secondScore < _clarifyMargin)
             {
-                // hỏi phân biệt (disambiguation)
+                // Ưu tiên nhãn có priority cao hơn
+                if (ranked[0].intent.Priority > ranked[1].intent.Priority)
+                {
+                    var res = _responses.Where(r => r.IntentId == top.intent.Id)
+                                   .OrderBy(r => r.UsageCount)
+                                   .ThenBy(r => r.Id)
+                                   .FirstOrDefault();
+                    return FinalizeResponse(user, ranked[0].intent, res?.ResponseText ?? ranked[0].intent.DefaultResponse, bestScore, ranked);
+                }
+
+                // Nếu priority = nhau -> hỏi phân biệt (disambiguation)
                 var options = ranked.Take(2).Select(x => x.intent.Name).ToList();
                 var clarify = $"Bạn muốn hỏi về: {string.Join(" / ", options)}?";
                 return FinalizeResponse(user, null, clarify, bestScore, ranked);
             }
 
-            // 3) lấy câu trả lời đa dạng (round-robin theo UsageCount tăng dần)
+            // 3) lấy câu trả lời đa dạng
             var resp = _responses.Where(r => r.IntentId == top.intent.Id)
                                   .OrderBy(r => r.UsageCount)
                                   .ThenBy(r => r.Id)
@@ -120,6 +130,7 @@ namespace Chatbot.Service
             {
                 if (string.IsNullOrWhiteSpace(input)) return string.Empty;
                 var lower = input.Trim().ToLowerInvariant();
+                lower = lower.Replace('đ', 'd');
                 // bỏ dấu tiếng Việt (Unicode combining marks)
                 var normalized = lower.Normalize(NormalizationForm.FormD);
                 var sb = new StringBuilder(normalized.Length);
@@ -185,11 +196,15 @@ namespace Chatbot.Service
             // Similarity chuẩn hoá 0..1 (1 = giống hệt)
             public static double Similarity(string a, string b)
             {
-                if (string.IsNullOrWhiteSpace(a) && string.IsNullOrWhiteSpace(b)) return 1.0;
-                var d = LevenshteinDistance(a, b);
-                var maxLen = Math.Max(a.Length, b.Length);
-                if (maxLen == 0) return 1.0;
-                return 1.0 - (double)d / maxLen;
+                var sa = new HashSet<string>(a.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+                var sb = new HashSet<string>(b.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+                if (sa.Count == 0 && sb.Count == 0) return 1.0;
+
+                var inter = new HashSet<string>(sa);
+                inter.IntersectWith(sb);
+
+                // tính theo tỉ lệ số từ khớp / số từ dài hơn
+                return (double)inter.Count / Math.Max(sa.Count, sb.Count);
             }
 
             // Jaccard trên tập token
@@ -252,9 +267,10 @@ namespace Chatbot.Service
                 {
                     var norm = TextNormalizer.Normalize(p.PatternText);
                     norm = ExpandSynonyms(norm);
-                    var simStr = Fuzzy.Similarity(user, norm);                // so trùng tổng thể
+                    //var simStr = Fuzzy.Similarity(user, norm);                // so trùng tổng thể
                     var simTok = Fuzzy.JaccardTokens(userTokens, TextNormalizer.Tokenize(norm)); // so theo token
-                    var combined = 0.6 * simStr + 0.4 * simTok;               // kết hợp đơn giản
+                    //var combined = 0.6 * simStr + 0.4 * simTok;               // kết hợp đơn giản
+                    var combined = simTok;
                     if (combined > best) best = combined;
 
                     // tăng mạnh nếu exact match (sau normalize)
@@ -264,12 +280,8 @@ namespace Chatbot.Service
                 // boost theo từ khoá quan trọng đơn giản
                 best += Boost(intent, userTokens);
 
-                // boost theo ngữ cảnh (ý định trước đó)
-                //if (_lastIntentId.HasValue && _lastIntentId.Value == intent.Id)
-                //    best += 0.03; // nhẹ thôi để không khoá cứng
-
                 // chặn score trong [0,1.2]
-                best = Math.Max(0, Math.Min(1.2, best));
+                //best = Math.Max(0, Math.Min(1.2, best));
 
                 results.Add((intent, best));
             }
@@ -290,7 +302,7 @@ namespace Chatbot.Service
         }
         #endregion
 
-        private ChatResult FinalizeResponse(string user, IntentVm? intent, string answer, double conf, List<(IntentVm intent, double score)> ranked)
+        private ChatResult FinalizeResponse(string user, IntentVm intent, string answer, double conf, List<(IntentVm intent, double score)> ranked)
         {
             //_repo.SaveConversation(new ConversationLog
             //{
